@@ -7,13 +7,13 @@ clock = pygame.time.Clock()
 
 pygame.init()
 
-WHITE = (255, 255, 255)
+background = "white"
 BLACK = (0, 0, 0)
 GRAY = (211, 211, 211)
 width = 400
 height = 500
 
-player = pygame.image.load("kotik.png")
+player = pygame.transform.scale(pygame.image.load("kotik.png"), (90, 70))
 
 fps = 40
 
@@ -37,20 +37,75 @@ class Label(Area):
         self.fill()
         mw.blit(self.image, (self.rect.x + shift_x, self.rect.y + shift_y))
 
+player_x = 170
+player_y = 400
+platforms = [(175, 480, 70, 10)]
+jump = False
+y_change = 0
+x_change = 0
+player_speed = 3
 
+screen = pygame.display_set_mode(width, height)
 pygame.display.set_caption("Kitty Jumper")
+
+def check_collisions(rect_list, j):
+    global player_x
+    global player_y
+    global y_change
+    for i in range(len(rect_list)):
+        if rect_list[i].colliderect([player_x, player_y + 60, 90, 5]) and jump == False and y_change > 0:
+            j = True
+    return j
+
+
+def update_player(y_pos):
+    global jump
+    global y_change
+    jump_height = 10
+    gravity = .4
+    if jump:
+        y_change = -jump_height
+        jump = False
+    y_pos += y_change
+    y_change += gravity
+    return y_pos
 
 running = True
 while running == True:
     clock.tick(fps)
-    mw.fill(WHITE)
+    mw.fill(background)
+    screen.fill(background)
+    screen.blit(player, (player_x, player_y))
+    blocks = []
+
+    for i in range(len(platforms)):
+        block = pygame.draw.rect(screen, BLACK, platforms[i], 1, 2)
+        blocks.append(block)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                x_change = -player_speed
+            if event.key == pygame.K_d:
+                x_change = player_speed
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                x_change = 0
+            if event.key == pygame.K_d:
+                x_change = 0
+        
 
-
+    player_y = update_player(player_y)
+    player_x += x_change
+    jump = check_collisions(blocks, jump)
     pygame.display.update()
     clock.tick(40)
+
+    pygame.display.flip()
+pygame.quit()
+
 
     
     
