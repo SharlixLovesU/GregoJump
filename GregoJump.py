@@ -45,6 +45,10 @@ jump = False
 y_change = 0
 x_change = 0
 player_speed = 5
+score_last = 0
+super_jumps = 2
+jump_last = 0
+
 
 
 pygame.display.set_caption("Kitty Jumper")
@@ -93,7 +97,13 @@ while running == True:
     score_text = font.render("High Score:" + str(high_score), True, BLACK, background)
     mw.blit(score_text, (200, 0))
     high_score_text = font.render("Score:" + str(score), True, BLACK, background)
-    mw.blit(score_text, (320, 20))
+    mw.blit(high_score_text, (320, 20))
+
+    score_text = font.render("Air Jumps (Пробіл) :" + str(super_jumps), True, BLACK, background)
+    mw.blit(score_text, (10, 10))
+    if game_over:
+        game_over_text = font.render("Game Over: Пробіл щоб перезапустити" + str(score), True, BLACK, background)
+        mw.blit(game_over_text, (80, 80))
 
     for i in range(len(platforms)):
         block = pygame.draw.rect(mw, BLACK, platforms[i], 0, 3)
@@ -103,10 +113,23 @@ while running == True:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                x_change = -player_speed
-            if event.key == pygame.K_d:
-                x_change = player_speed
+            if event.key == pygame.K_SPACE and game_over:
+                game_over = False
+                score = 0
+                player_x = 170
+                player_y = 400
+                background = "white"
+                score_last = 0
+                super_jumps = 2
+                jump_last = 0
+                platforms = [(175, 480, 70, 10), (85, 370, 70, 10), (260, 379, 70, 10), (175, 260, 70, 10), (85, 150, 70, 10), (260, 150, 70, 10), (175, 40, 70, 10)]
+        if event.key == pygame.K_SPACE and not game_over and super_jumps > 0:
+            super_jumps -= 1
+            y_change = -15
+        if event.key == pygame.K_a:
+            x_change = -player_speed
+        if event.key == pygame.K_d:
+            x_change = player_speed
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
                 x_change = 0
@@ -118,6 +141,8 @@ while running == True:
     else:
         game_over = True
         y_change = 0
+        x_change = 0
+
     player_x += x_change
     jump = check_collisions(blocks, jump)
     pygame.display.update()
@@ -137,6 +162,15 @@ while running == True:
 
     if score > high_score:
         high_score = score
+
+    if score - score_last > 15:
+        score_last = score
+        background = (random.randint(1, 255), random.randint(1, 255), random randint(1, 255))
+    
+    if score - jump_last > 50:
+        jump_last = score
+        super_jumps += 1
+
     pygame.display.flip()
 pygame.quit()
 
