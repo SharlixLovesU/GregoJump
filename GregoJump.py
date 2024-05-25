@@ -63,6 +63,8 @@ def check_collisions(rect_list, j):
     return j
 
 
+#прижок
+
 def update_player(y_pos):
     global jump
     global y_change
@@ -74,6 +76,8 @@ def update_player(y_pos):
     y_pos += y_change
     y_change += gravity
     return y_pos
+
+#платформи та їх зміна
 
 def update_platforms(my_list, y_pos, change):
     global score 
@@ -123,6 +127,7 @@ while running == True:
                 super_jumps = 2
                 jump_last = 0
                 platforms = [(175, 480, 70, 10), (85, 370, 70, 10), (260, 379, 70, 10), (175, 260, 70, 10), (85, 150, 70, 10), (260, 150, 70, 10), (175, 40, 70, 10)]
+            #cупер-прижки
             if event.key == pygame.K_SPACE and not game_over and super_jumps > 0:
                 super_jumps -= 1
                 y_change = -15
@@ -146,6 +151,7 @@ while running == True:
     player_x += x_change
     jump = check_collisions(blocks, jump)
     pygame.display.update()
+    #до платформ
     platforms = update_platforms(platforms, player_y, y_change)
 
     if player_x < -20:
@@ -173,7 +179,3 @@ while running == True:
 
     pygame.display.flip()
 pygame.quit()
-
-
-    
-    
